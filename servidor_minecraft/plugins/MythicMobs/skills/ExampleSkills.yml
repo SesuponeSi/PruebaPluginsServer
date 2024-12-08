@@ -1,0 +1,171 @@
+# For more information, check out the plugin manual or join us on Discord:
+# http://www.mythicmobs.net
+#  
+SmashAttack:
+  Cooldown: 8
+  Conditions:
+  - targetwithin{d=25}
+  Skills:
+  - message{cooldown=30;m="<mob.name><&co> Hahahah! I will crush you, fool!"} @PlayersInRadius{r=40}
+  - teleport @target
+  - effect:sound{s=mob.endermen.portal;volume=1.0;pitch=0.5}
+  - delay 10
+  - damage{amount=5;ignorearmor=true} @PlayersInRadius{r=5}
+  - throw{velocity=10;velocityY=5} @PlayersInRadius{r=5}
+  - effect:explosion @Self
+SummonSkeletons:
+  Cooldown: 15
+  Skills:
+  - message{m="<caster.name><&co> Arise, my minions!"} @PlayersInRadius{r=40}
+  - delay 20
+  - summon{mob=SkeletalMinion;amount=2;noise=5} @Self
+  - delay 20
+  - summon{mob=SkeletalMinion;amount=2;noise=5} @Self
+  - delay 20
+  - summon{mob=SkeletalMinion;amount=2;noise=5} @Self
+AngrySludgePoison:
+  Cooldown: 10
+  Skills:
+  - potion{type=POISON;lvl=2;duration=100} @PlayersInRadius{r=15}
+  - effect:particles{p=happyVillager;amount=1000;hSpread=15;ySpread=1;speed=0;yOffset=0.5} @Self
+Pruebavariable:
+  Skills:
+    - message{m=<caster.var.Animation>} @NearestPlayer
+AtaqueSomarSoldier:
+  Conditions:
+#    - variableEquals{key=caster.ataque;value="damage"}
+  Cooldown: 1
+  Skills:
+    - setVariable{key=caster.ataque;t=String;value="true"} @Self
+    - message{m="inicio"} @NearestPlayer
+    - randomskill{s=AtaqueUnico,AtaqueArea 50}
+AtaqueUnico:
+  Skills:
+  - cancelevent
+  - randomskill{s=AtaqueBase,AtaqueBase2,Estocada}
+  - message{m="Ataque"} @World
+AtaqueArea:
+  Skills:
+  - cancelevent
+  - randomskill{s=
+      [- skill{s=AtaqueArea1} @LivingInCone{a=90;r=2;target=monster;ignore=samefaction}],
+      [- skill{s=AtaqueArea2} @LivingInCone{a=120;r=2;target=monster;ignore=samefaction}],
+      [- skill{s=AtaqueArea3} @EIR{r=3;target=monster;ignore=samefaction}]}
+AtaqueBase:
+  Skills:
+  - state{mid=SomarSoldier;s=animationAtaqueComun;li=0;lo=1;pr=0} @Self
+  - delay 6
+  - basedamage{m=1} @Target
+  - delay 15
+  - setVariable{key=caster.ataque;t=String;value="false"} @Self
+  - message{m="finAtaque"} @NearestPlayer
+AtaqueBase2:
+  Skills:
+  - partvis{mid=SomarSoldier;p=left_sword}
+  - delay 1
+  - state{mid=SomarSoldier;s=animationAtaqueComun2;li=0;lo=0;pr=0} @Self
+  - delay 12
+  - basedamage{m=1.5} @Target
+  - delay 30
+  - setVariable{key=caster.ataque;t=String;value="false"} @Self
+  - message{m="finAtaque"} @NearestPlayer
+Estocada:
+  Skills:
+  - state{mid=SomarSoldier;s=animationAtaqueEstocadaDerecha;li=0;lo=1;pr=1} @Self
+  - delay 18
+  - basedamage{m=5} @Target
+  - delay 2
+  - setVariable{key=caster.ataque;t=String;value="false"} @Self
+  - message{m="finAtaque"} @NearestPlayer
+AtaqueArea1:
+  Conditions:
+    - targets{a=2to3} orElseCast AtaqueUnico
+  Skills:
+    - state{mid=SomarSoldier;s=animationAtaqueArea1} @Self
+    - delay 11
+    - throw{velocity=10;velocityY=1} 
+    - basedamage{m=1}
+    - delay 26
+    - setVariable{key=caster.ataque;t=String;value="false"} @Self
+    - message{m="finAtaque"} @NearestPlayer
+AtaqueArea2:
+  Conditions:
+    - targets{a=3to4} orElseCast AtaqueArea1
+  Skills:
+    - state{mid=SomarSoldier;s=animationAtaqueArea2} @Self
+    - delay 15
+    - throw{velocity=5;velocityY=1} 
+    - basedamage{m=2}   
+    - delay 40
+    - setVariable{key=caster.ataque;t=String;value="false"} @Self
+    - message{m="finAtaque"} @NearestPlayer
+AtaqueArea3:
+  Conditions:
+    - targets{a=>5} orElseCast AtaqueArea2
+  Skills:
+    - state{mid=SomarSoldier;s=animationAtaqueArea3} @Self
+    - delay 20
+    - throw{velocity=30;velocityY=2} 
+    - basedamage{m=2.5}   
+    - delay 47
+    - setVariable{key=caster.ataque;t=String;value="false"} @Self
+    - message{m="finAtaque"} @NearestPlayer
+persIdle:
+  Conditions:
+    - Moving{e=true} castInstead walkAnimation1 # La animación no debe estar activa
+    - variableEquals{key=caster.ataque;value="false"}
+  Skills:
+    #- setVariable{key=caster.AnimacionCaminando;t=String;value="false"} @Self
+    - setVariable{key=caster.Animacion;t=String;value="idle"} @self
+    - state{mid=SomarSoldier;s=SupuestoIdle;li=0;lo=0;pr=0} @self
+walk:
+  Conditions:
+    - Moving{e=true} castInstead walkAnimation1  # El mob debe estar caminando
+    - targetwithin{d=3} false    # No debe haber un objetivo cercano
+    - variableEquals{key=caster.Animacion;value="idle"}  # La animación no debe estar activa
+  Skills:
+    - setVariable{key=caster.Animacion;t=String;value="c"} @Self
+    - state{mid=SomarSoldier;s=walk1(Normal)}     # Inicia la animación
+    - delay 31
+    - setVariable{key=caster.Animacion;t=String;value="idle"} @Self
+
+walkAnimation1:
+  Conditions:
+    - Moving orElseCast persIdle     # El mob debe estar caminando
+    - variableEquals{key=caster.Animacion;value="idle"}
+    - variableEquals{key=caster.ataque;value="false"}
+  Skills:
+    - setVariable{key=caster.Animacion;t=String;value="c1"} @Self
+    - state{mid=SomarSoldier;s=AnimationCaminarIzquierda} @Self
+    - delay 15
+    - skill{s=walkAnimation2} @Self
+      
+walkAnimation2:
+  Conditions:
+   - Moving orElseCast persIdle
+   - variableEquals{key=caster.ataque;value="false"}
+  Skills:
+    - setVariable{key=caster.Animacion;t=String;value="c2"} @Self
+    - state{mid=SomarSoldier;s=AnimationCaminarDerecha} @Self
+    - delay 15
+    - setVariable{key=caster.Animacion;t=String;value="idle"} @Self
+DamagedAnimation:
+  Conditions:
+    - variableEquals{key=caster.ataque;value="false"}
+    - health{h=>1} true
+  Skills:
+    - setVariable{key=caster.Animacion;t=String;value="damg"} @Self
+    - partvis{mid=SomarSoldier;p=rigth_sword;v=false}
+    - delay 1
+    - state{mid=SomarSoldier;s=AnimationDamaged} @Self
+    - delay 1
+    - partvis{mid=SomarSoldier;p=rigth_sword;v=true}
+    - setVariable{key=caster.Animacion;t=String;value="idle"} @Self
+PrepareModel:
+  Skills:
+    - model{mid=SomarSoldier;n="Somar soldier";mode=Bend}
+    - delay 2
+    - partvis{mid=SomarSoldier;p=auxblock}
+    - partvis{mid=SomarSoldier;p=left_arco;v=false}
+    - setVariable{key=caster.ataque;t=String;value="false"} @Self
+    - setVariable{key=caster.Animacion;t=String;value="idle"} @self

@@ -1,0 +1,58 @@
+# For more information, check out the plugin manual or join us on Discord:
+# http://www.mythicmobs.net
+#  
+SkeletonKing:
+  Type: WITHER_SKELETON
+  Display: '&6Skeleton King'
+  Health: 500
+  Damage: 10
+  Skills:
+  - speak{m="None may challenge the Skeleton King!";cooldown=20} @PlayersInRadius{r=40} ~onCombat >0 0.2
+  - speak{m="Ahahahahah! Die, <trigger.name>!"} @PlayersInRadius{r=40} ~onPlayerKill >0 1
+  - skill{s=SummonSkeletons} @self 0.1
+  - skill{s=SmashAttack} @target >0 0.2
+  Equipment:
+  - KingsCrown HEAD
+  - SkeletonKingSword HAND
+  Drops:
+  - SkeletonKingDrops
+  Options:
+    AlwaysShowName: true
+    MovementSpeed: 0.2
+    MaxCombatDistance: 25
+    PreventOtherDrops: true
+SkeletalMinion:
+  Type: SKELETON
+  Display: '&2Skeletal Minion'
+  Health: 10
+  Damage: 2
+  Options:
+    MovementSpeed: 0.1
+SomarSoldier:
+  Type: Zombie
+  Display: '&aSoldado Somar'
+  Faction: Somar
+  Options:
+    PreventSunburn: true
+    FollowRange: 100
+    movementspeed: 1.2
+  Modules:
+    ThreatTable: true
+  Health: 1000
+  damage: 75
+  Skills:
+    - skill{s=PrepareModel} @Self ~onSpawn
+    - skill{s=AtaqueSomarSoldier} ~onAttack
+    - skill{s=DamagedAnimation} ~onDamaged
+#    - skill{s=walk} @Self ~onTimer:1
+    - skill{s=persIdle} @Self ~onTimer:1
+    - skill{s=Pruebavariable} ~onTimer:1
+  AITargetSelectors:
+    - clear
+    - atacker
+    - monsters
+    - players
+  AIgoalSelectors:
+    - 0 clear
+    - 1 meleeatack
+  
